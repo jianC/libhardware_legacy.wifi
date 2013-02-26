@@ -1,0 +1,4 @@
+app_process
+netd
+*.o
+*.so
