@@ -23,9 +23,9 @@ static inline void debug_printf(int prio, char *fmt, ...) {
 #define PUBLIC_API __attribute__ (( visibility("default") ))
 
 #define WIFI_DRIVER_MODULE_NAME "bcm4329"
-#define WIFI_DRIVER_MODULE_PATH "/system/modules/bcm4329.ko"
-#define WIFI_DRIVER_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329.bin nvram_path=/vendor/firmware/nvram_net.txt"
-#define WIFI_AP_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329_apsta.bin nvram_path=/vendor/firmware/nvram_net.txt"
+#define WIFI_DRIVER_MODULE_PATH "/system/lib/modules/bcm4329.ko"
+#define WIFI_DRIVER_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329.bin nvram_path=/proc/calibration"
+#define WIFI_AP_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329_apsta.bin nvram_path=/proc/calibration"
 
 #define DRIVER_PROP_NAME "wlan.driver.status"
 #define AP_PROP_NAME "wlan.ap.driver.status"
