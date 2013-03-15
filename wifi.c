@@ -22,25 +22,17 @@ static inline void debug_printf(int prio, char *fmt, ...) {
 
 #define PUBLIC_API __attribute__ (( visibility("default") ))
 
-#define WIFI_DRIVER_MODULE_NAME "bcm4329"
-#define WIFI_DRIVER_MODULE_PATH "/system/lib/modules/bcm4329.ko"
-#define WIFI_DRIVER_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329.bin nvram_path=/proc/calibration"
-#define WIFI_AP_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329_apsta.bin nvram_path=/proc/calibration"
+#define WIFI_DRIVER_MODULE_NAME "wlan"
+#define WIFI_DRIVER_MODULE_PATH "/system/lib/modules/wlan.ko"
+#define WIFI_DRIVER_MODULE_ARGS ""
 
 #define DRIVER_PROP_NAME "wlan.driver.status"
 #define AP_PROP_NAME "wlan.ap.driver.status"
-
-#define WIFI_GET_FW_PATH_STA 0
-#define WIFI_GET_FW_PATH_AP 1
-#define WIFI_GET_FW_PATH_P2P 2
-#define WIFI_FW_PATH_STA "/vendor/firmware/fw_bcm4329.bin"
-#define WIFI_FW_PATH_AP "/vendor/firmware/fw_bcm4329_apsta.bin"
 
 static char *DRIVER_MODULE_NAME = WIFI_DRIVER_MODULE_NAME;
 static char *DRIVER_MODULE_TAG = WIFI_DRIVER_MODULE_NAME " ";
 static char *DRIVER_MODULE_PATH = WIFI_DRIVER_MODULE_PATH;
 static char *DRIVER_MODULE_ARGS = WIFI_DRIVER_MODULE_ARGS;
-static char *AP_MODULE_ARGS = WIFI_AP_MODULE_ARGS;
 
 extern int init_module(void *, unsigned long, const char *);
 extern int delete_module(const char *, unsigned int);
@@ -148,87 +140,6 @@ int PUBLIC_API wifi_unload_hotspot_driver() {
 			return 0;
 		return -1;
 	}
-}
-
-int PUBLIC_API wifi_load_hotspot_driver() {
-	int result;
-
-	if (is_wifi_hotspot_driver_loaded()) {
-		return 0;
-	}
-
-	property_set(AP_PROP_NAME, "loading");
-
-	result = insmod(DRIVER_MODULE_PATH, AP_MODULE_ARGS);
-	if (result == 0) {
-		property_set(AP_PROP_NAME, "ok");
-		return 0;
-	}
-	property_set(AP_PROP_NAME, "timeout");
-	wifi_unload_hotspot_driver();
-	return -1;
-}
-
-int PUBLIC_API wifi_change_fw_path(const char *fwpath) {
-	char val[PROP_VALUE_MAX];
-
-	if (!fwpath)
-		return 0;
-
-	/*
-	 * XXX EPIC HACK
-	 * For newer drivers, wifi_change_fw_path() has the effect of switching
-	 * the wlan driver between STA and AP mode, so do the same here (even
-	 * though the actions have little to do with firmware paths).
-	 */
-	if (strcmp(fwpath, WIFI_FW_PATH_STA) == 0) {
-		__system_property_get(DRIVER_PROP_NAME, val);
-		if (strcmp(val, "ok") != 0) {
-			debug_log(ANDROID_LOG_DEBUG, "Switching to STA mode from AP mode");
-			/* Need to switch modes */
-			wifi_unload_hotspot_driver();
-			wifi_load_driver();
-		}
-	} else if (strcmp(fwpath, WIFI_FW_PATH_AP) == 0) {
-		__system_property_get(AP_PROP_NAME, val);
-		if (strcmp(val, "ok") != 0) {
-			debug_log(ANDROID_LOG_DEBUG, "Switching to AP mode from STA mode");
-			/* Need to switch modes */
-			wifi_unload_driver();
-			wifi_load_hotspot_driver();
-		}
-	} else {
-		debug_log(ANDROID_LOG_DEBUG, "FW path doesn't match any known opmode!");
-	}
-
-	return 0;
-}
-
-char PUBLIC_API *wifi_get_fw_path(int fw_type) {
-	switch (fw_type) {
-	case WIFI_GET_FW_PATH_AP:
-		debug_printf(ANDROID_LOG_DEBUG, "wifi_get_fw_path gives FW path %s", WIFI_FW_PATH_AP);
-		/*
-		 * XXXXXX EPIC EPIC HACK
-		 * For some reason, wifi_change_fw_path() doesn't seem
-		 * to be called by the framework, so we cheat and call it here.
-		 */
-		wifi_change_fw_path(WIFI_FW_PATH_AP);
-		return WIFI_FW_PATH_AP;
-		break;
-	case WIFI_GET_FW_PATH_STA:
-		debug_printf(ANDROID_LOG_DEBUG, "wifi_get_fw_path gives FW path %s", WIFI_FW_PATH_STA);
-		/*
-		 * XXXXXX EPIC EPIC HACK
-		 * For some reason, wifi_change_fw_path() doesn't seem
-		 * to be called by the framework, so we cheat and call it here.
-		 */
-		wifi_change_fw_path(WIFI_FW_PATH_STA);
-		return WIFI_FW_PATH_STA;
-		break;
-	}
-	debug_printf(ANDROID_LOG_DEBUG, "%d: unknown fw type!", fw_type);
-	return NULL;
 }
 
 static inline int insmod(char *modpath, char *modargs) {
