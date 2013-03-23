@@ -24,8 +24,8 @@ static inline void debug_printf(int prio, char *fmt, ...) {
 
 #define WIFI_DRIVER_MODULE_NAME "bcm4329"
 #define WIFI_DRIVER_MODULE_PATH "/system/lib/modules/bcm4329.ko"
-#define WIFI_DRIVER_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329.bin nvram_path=/proc/calibration"
-#define WIFI_AP_MODULE_ARGS "iface_name=wlan0 firmware_path=/vendor/firmware/fw_bcm4329_apsta.bin nvram_path=/proc/calibration"
+#define WIFI_DRIVER_MODULE_ARGS "iface_name=wlan0 firmware_path=/system/etc/firmware/fw_bcm4329.bin nvram_path=/proc/calibration"
+#define WIFI_AP_MODULE_ARGS "iface_name=wlan0 firmware_path=/system/etc/firmware/fw_bcm4329_apsta.bin nvram_path=/proc/calibration"
 
 #define DRIVER_PROP_NAME "wlan.driver.status"
 #define AP_PROP_NAME "wlan.ap.driver.status"
@@ -33,8 +33,8 @@ static inline void debug_printf(int prio, char *fmt, ...) {
 #define WIFI_GET_FW_PATH_STA 0
 #define WIFI_GET_FW_PATH_AP 1
 #define WIFI_GET_FW_PATH_P2P 2
-#define WIFI_FW_PATH_STA "/vendor/firmware/fw_bcm4329.bin"
-#define WIFI_FW_PATH_AP "/vendor/firmware/fw_bcm4329_apsta.bin"
+#define WIFI_FW_PATH_STA "/system/etc/firmware/fw_bcm4329.bin"
+#define WIFI_FW_PATH_AP "/system/etc/firmware/fw_bcm4329_apsta.bin"
 
 static char *DRIVER_MODULE_NAME = WIFI_DRIVER_MODULE_NAME;
 static char *DRIVER_MODULE_TAG = WIFI_DRIVER_MODULE_NAME " ";
