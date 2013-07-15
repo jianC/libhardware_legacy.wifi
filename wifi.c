@@ -101,10 +101,7 @@ int PUBLIC_API wifi_load_driver() {
 
 	property_set(DRIVER_PROP_NAME, "loading");
 
-	if (strcmp(FIRMWARE_LOADER,"wlan_loader") != 0) {
-		property_set("ctl.start", FIRMWARE_LOADER);
-	}
-
+	property_set("ctl.start", FIRMWARE_LOADER);
 	result = insmod(DRIVER_MODULE_PATH, DRIVER_MODULE_ARGS);
 	if (result == 0) {
 		property_set(DRIVER_PROP_NAME, "ok");
